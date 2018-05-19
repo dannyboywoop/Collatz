@@ -1,3 +1,5 @@
+This program takes user input, n, and returns the start position less than n that produces the longest Collatz chain.
+
 Breif discription of the algorithm:
 It relies on the fact that the chain from any given number to 1 is constant.
 So once this chain length has been calculated once, it does not need to be calculated again.
