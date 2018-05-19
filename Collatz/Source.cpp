@@ -6,7 +6,6 @@ using namespace std;
 
 const unsigned int arraySize{ 320000000 };
 int* chains;
-int goal;
 
 unsigned long int applyCollatz(unsigned long int n) {
 	return move((n % 2 == 0) ? n / 2 : n * 3 + 1);
@@ -25,7 +24,7 @@ int calculateChain(unsigned long int startPos) {
 	return move(calculateChain(applyCollatz(startPos)) + 1);
 }
 
-int findLongestChain() {
+int findLongestChain(int goal) {
 	int longestIndex = 0;
 	int longestVal = 0;
 	int bottomOfSearch = goal / 2;
@@ -33,8 +32,8 @@ int findLongestChain() {
 	
 	for (int i = bottomOfSearch; i <= goal; i += 2) {
 		if (calculateChain(i) > longestVal) {
-			longestIndex = i;
-			longestVal = chains[i];
+			longestIndex = i-1;
+			longestVal = chains[i-1];
 		}
 	}
 	return longestIndex;
@@ -52,6 +51,7 @@ int main() {
 		return 1;
 	}
 
+	int goal;
 	cout << "Enter number to iterate up to (dont be a cunt, this isn't parsed): ";
 	cin >> goal;
 	if (goal < 10) {
@@ -61,7 +61,7 @@ int main() {
 
 	auto start = std::chrono::high_resolution_clock::now();
 	
-	int longestChain = findLongestChain();
+	int longestChain = findLongestChain(goal);
 
 	// Record end time
 	auto finish = std::chrono::high_resolution_clock::now();
