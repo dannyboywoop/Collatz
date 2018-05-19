@@ -1,14 +1,12 @@
 #include<iostream>
+#include<map>
 #include<chrono>
 #include<string>
 using namespace std;
 
-//VS is fickle with what theyll let me allocate,
-//so just the biggest number that consistantly worked (bigger would improve speed)
-const unsigned int arraySize{ 320000000 };
-//global array to store chain lengths,
-//chains[i] repesents the chainlength starting at position i+1;
-int* chains;
+typedef pair<unsigned long int, int> chain;
+typedef map<unsigned long int, int> chainMap;
+chainMap chains;
 
 //simply gets next item in collatz sequence
 unsigned long int applyCollatz(unsigned long int n) {
@@ -19,16 +17,11 @@ unsigned long int applyCollatz(unsigned long int n) {
 int calculateChain(unsigned long int startPos) {
 	if (startPos == 1) return 1;
 
-	if (startPos < arraySize) {//if in range for which chainLengths are stored
-		if (chains[startPos - 1] == 0) {//if chainLength not known
-			//store the chainLength, it is equal to calculateChain(nextInCollatzSequence) + 1
-			chains[startPos - 1] = calculateChain(applyCollatz(startPos)) + 1;
-		}
-		return chains[startPos - 1];//return chainLength
+	pair<chainMap::iterator, bool> const& insertInfo = chains.insert(chain(startPos,0));
+	if (insertInfo.second) {//if wasnt already in list
+		insertInfo.first->second = calculateChain(applyCollatz(startPos)) + 1;
 	}
-	//if out of range of array in which chain lengths are stored,
-	//just calculate the chain length based on next in sequence and return
-	return move(calculateChain(applyCollatz(startPos)) + 1);
+	return insertInfo.first->second;
 }
 
 //find the starting pos < goal with the longest chain
@@ -44,7 +37,7 @@ int findLongestChain(int goal) {
 		if (calculateChain(i) > longestChain) {
 			//if so store its details
 			longestChainStart = i;
-			longestChain = chains[i-1];
+			longestChain = chains[i];
 		}
 	}
 	//return the startPos of longest chain
@@ -53,17 +46,10 @@ int findLongestChain(int goal) {
 
 
 int main() {
-	try {
-		chains = new int[arraySize]();//initialize empty array
-	}
-	catch (bad_alloc &e) {//catch possible failure to allocate memory to array
-		cout << e.what() << endl;
-		return 1;
-	}
-
+	//take user input of goal
 	int goal;
 	cout << "Enter number to iterate up to (dont be a cunt, this isn't parsed): ";
-	cin >> goal;//take user input of goal
+	cin >> goal;
 	if (goal < 10) {//make sure its above 10
 		cout << "Goal must be greater than 10!" << endl;
 		return 1;
@@ -90,5 +76,4 @@ int main() {
 	cout << endl << "Hit return to close the Program!";
 	cin.ignore();
 	getline(cin, confirm);//pause for user input
-	delete[] chains;
 }
