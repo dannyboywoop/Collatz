@@ -3,39 +3,47 @@
 #include<string>
 using namespace std;
 
-
+//VS is fickle with what theyll let me allocate, so just the biggest number that consistantly worked (bigger would improve speed)
 const unsigned int arraySize{ 320000000 };
-int* chains;
+int* chains;//global array to store chain lengths, chains[i] repesents the chainlength starting at position i+1;
 
+//simply gets next item in collatz sequence
 unsigned long int applyCollatz(unsigned long int n) {
 	return move((n % 2 == 0) ? n / 2 : n * 3 + 1);
 }
 
+//recursive function to get chainlength of startPos
 int calculateChain(unsigned long int startPos) {
 	if (startPos == 1) return 1;
 
-	if (startPos < arraySize) {
-		if (chains[startPos - 1] == 0) {
+	if (startPos < arraySize) {//if in range for which chainLengths are stored
+		if (chains[startPos - 1] == 0) {//if chainLength not known
+			//store the chainLength, it is equal to calculateChain(nextInCollatzSequence) + 1
 			chains[startPos - 1] = calculateChain(applyCollatz(startPos)) + 1;
 		}
-		return chains[startPos - 1];
+		return chains[startPos - 1];//return chainLength
 	}
-
+	//if out of range of array in which chain lengths are stored, just calculate the chain length and return
 	return move(calculateChain(applyCollatz(startPos)) + 1);
 }
 
+//find the starting pos < goal with the longest chain
 int findLongestChain(int goal) {
 	int longestChainIndex = 0;
 	int longestChain = 0;
-	int bottomOfSearch = goal / 2;
-	if (bottomOfSearch % 2 == 0) bottomOfSearch++;
+	int bottomOfSearch = goal / 2;//longest chain will be in upper half
+	if (bottomOfSearch % 2 == 0) bottomOfSearch++;//start on an odd number
 	
+	//iterate through odd numbers in upper half of goal
 	for (int i = bottomOfSearch; i <= goal; i += 2) {
+		//calculate the chain length and see if its the longest
 		if (calculateChain(i) > longestChain) {
+			//if so store its details
 			longestChainIndex = i-1;
 			longestChain = chains[i-1];
 		}
 	}
+	//return the startPos of longest chain
 	return longestChainIndex;
 }
 
