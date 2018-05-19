@@ -15,12 +15,13 @@ int calculateChain(unsigned long int startPos) {
 	if (startPos == 1) return 1;
 
 	if (startPos < arraySize) {
-		if (chains[startPos - 1] != 0) return chains[startPos - 1];
+		if (chains[startPos - 1] == 0) {
+			chains[startPos - 1] = calculateChain(applyCollatz(startPos)) + 1;
+		}
+		return chains[startPos - 1];
 	}
 
-	int links = calculateChain(applyCollatz(startPos)) + 1;
-	if (startPos<arraySize) chains[startPos - 1] = links;
-	return move(links);
+	return move(calculateChain(applyCollatz(startPos)) + 1);
 }
 
 void performRun() {
@@ -55,7 +56,7 @@ int main() {
 		cout << e.what() << endl;
 		return 1;
 	}
-	goal = 100000000;
+	goal = 1000000;
 
 
 	auto start = std::chrono::high_resolution_clock::now();
