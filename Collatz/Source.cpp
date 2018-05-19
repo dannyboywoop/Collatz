@@ -3,7 +3,7 @@
 using namespace std;
 
 
-const unsigned int arraySize{ 400000000 };
+const unsigned int arraySize{ 320000000 };
 int* chains;
 int goal;
 
@@ -33,8 +33,10 @@ void performRun() {
 
 int getLongest() {
 	int longestIndex = 0;
-	int longestVal = 0;
-	for (int i = 1; i <= goal; i++) {
+	int longestVal = 0; 
+	int bottomOfSearch = goal / 2;
+	if (bottomOfSearch % 2 == 1) bottomOfSearch++;
+	for (int i = bottomOfSearch; i <= goal; i += 2) {
 		if (chains[i] > longestVal) {
 			longestIndex = i;
 			longestVal = chains[i];
@@ -45,7 +47,6 @@ int getLongest() {
 
 int main() {
 	// Record start time
-	auto start = std::chrono::high_resolution_clock::now();
 
 	try {
 		chains = new int[arraySize]();
@@ -54,7 +55,11 @@ int main() {
 		cout << e.what() << endl;
 		return 1;
 	}
-	goal = 10000000;
+	goal = 100000000;
+
+
+	auto start = std::chrono::high_resolution_clock::now();
+	
 	performRun();
 	int longestChain = getLongest();
 
