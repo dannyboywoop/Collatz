@@ -25,18 +25,18 @@ int calculateChain(unsigned long int startPos) {
 }
 
 int findLongestChain(int goal) {
-	int longestIndex = 0;
-	int longestVal = 0;
+	int longestChainIndex = 0;
+	int longestChain = 0;
 	int bottomOfSearch = goal / 2;
 	if (bottomOfSearch % 2 == 0) bottomOfSearch++;
 	
 	for (int i = bottomOfSearch; i <= goal; i += 2) {
-		if (calculateChain(i) > longestVal) {
-			longestIndex = i-1;
-			longestVal = chains[i-1];
+		if (calculateChain(i) > longestChain) {
+			longestChainIndex = i-1;
+			longestChain = chains[i-1];
 		}
 	}
-	return longestIndex;
+	return longestChainIndex;
 }
 
 
