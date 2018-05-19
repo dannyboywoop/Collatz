@@ -25,18 +25,18 @@ int calculateChain(unsigned long int startPos) {
 }
 
 int findLongestChain(int goal) {
-	int longestChainIndex = 0;
+	int longestChainStart = 0;
 	int longestChain = 0;
 	int bottomOfSearch = goal / 2;
 	if (bottomOfSearch % 2 == 0) bottomOfSearch++;
 	
 	for (int i = bottomOfSearch; i <= goal; i += 2) {
 		if (calculateChain(i) > longestChain) {
-			longestChainIndex = i-1;
+			longestChainStart = i;
 			longestChain = chains[i-1];
 		}
 	}
-	return longestChainIndex;
+	return longestChainStart;
 }
 
 
@@ -61,15 +61,15 @@ int main() {
 
 	auto start = std::chrono::high_resolution_clock::now();
 	
-	int longestChain = findLongestChain(goal);
+	int longestChainStartPos = findLongestChain(goal);
 
 	// Record end time
 	auto finish = std::chrono::high_resolution_clock::now();
 
 	//output chain details
 	cout << "For values less than " << goal << endl;
-	cout << "Longest chain starts at: " << longestChain + 1
-		<< ", it is " << chains[longestChain] << " long!" << endl;
+	cout << "Longest chain starts at: " << longestChainStartPos
+		<< ", it is " << chains[longestChainStartPos-1] << " long!" << endl;
 
 	//measure time elapsed
 	std::chrono::duration<double> elapsed = finish - start;
