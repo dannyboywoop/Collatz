@@ -1,5 +1,6 @@
 #include<iostream>
 #include<chrono>
+#include<string>
 using namespace std;
 
 
@@ -24,27 +25,21 @@ int calculateChain(unsigned long int startPos) {
 	return move(calculateChain(applyCollatz(startPos)) + 1);
 }
 
-void performRun() {
+int findLongestChain() {
+	int longestIndex = 0;
+	int longestVal = 0;
 	int bottomOfSearch = goal / 2;
 	if (bottomOfSearch % 2 == 0) bottomOfSearch++;
+	
 	for (int i = bottomOfSearch; i <= goal; i += 2) {
-		calculateChain(i);
-	}
-}
-
-int getLongest() {
-	int longestIndex = 0;
-	int longestVal = 0; 
-	int bottomOfSearch = goal / 2;
-	if (bottomOfSearch % 2 == 1) bottomOfSearch++;
-	for (int i = bottomOfSearch; i <= goal; i += 2) {
-		if (chains[i] > longestVal) {
+		if (calculateChain(i) > longestVal) {
 			longestIndex = i;
 			longestVal = chains[i];
 		}
 	}
 	return longestIndex;
 }
+
 
 int main() {
 	// Record start time
@@ -56,13 +51,17 @@ int main() {
 		cout << e.what() << endl;
 		return 1;
 	}
-	goal = 1000000;
 
+	cout << "Enter number to iterate up to (dont be a cunt, this isn't parsed): ";
+	cin >> goal;
+	if (goal < 10) {
+		cout << "Goal must be greater than 10!" << endl;
+		return 1;
+	}
 
 	auto start = std::chrono::high_resolution_clock::now();
 	
-	performRun();
-	int longestChain = getLongest();
+	int longestChain = findLongestChain();
 
 	// Record end time
 	auto finish = std::chrono::high_resolution_clock::now();
@@ -75,6 +74,9 @@ int main() {
 	//measure time elapsed
 	std::chrono::duration<double> elapsed = finish - start;
 	cout << "Time for execution: " << elapsed.count() << "s" << endl;
-
+	string confirm;
+	cout << endl << "Hit return to close the Program!";
+	cin.ignore();
+	getline(cin, confirm);
 	delete[] chains;
 }
