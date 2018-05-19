@@ -2,32 +2,26 @@
 #include<chrono>
 using namespace std;
 
-
-const unsigned int arraySize{ 400000000 };
 int* chains;
 int goal;
 
-unsigned long int applyCollatz(unsigned long int n) {
-	return move((n % 2 == 0) ? n / 2 : n * 3 + 1);
+void applyCollatz(unsigned long int& n) {
+	n = move((n % 2 == 0) ? n / 2 : n * 3 + 1);
 }
 
 int calculateChain(unsigned long int startPos) {
-	if (startPos == 1) return 1;
-
-	if (startPos < arraySize) {
-		if (chains[startPos - 1] != 0) return chains[startPos - 1];
+	int chainLength{ 1 };
+	unsigned long int n = startPos;
+	while (n != 1) {
+		applyCollatz(n);
+		chainLength++;
 	}
-
-	int links = calculateChain(applyCollatz(startPos)) + 1;
-	if (startPos<arraySize) chains[startPos - 1] = links;
-	return move(links);
+	return chainLength;
 }
 
 void performRun() {
-	int bottomOfSearch = goal / 2;
-	if (bottomOfSearch % 2 == 0) bottomOfSearch++;
-	for (int i = bottomOfSearch; i <= goal; i += 2) {
-		calculateChain(i);
+	for (int i = 1; i <= goal; i++) {
+		chains[i-1]=calculateChain(i);
 	}
 }
 
@@ -47,14 +41,14 @@ int main() {
 	// Record start time
 	auto start = std::chrono::high_resolution_clock::now();
 
+	goal = 10000000;
 	try {
-		chains = new int[arraySize]();
+		chains = new int[goal]();
 	}
 	catch (bad_alloc &e) {
 		cout << e.what() << endl;
 		return 1;
 	}
-	goal = 10000000;
 	performRun();
 	int longestChain = getLongest();
 
