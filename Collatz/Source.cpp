@@ -1,11 +1,11 @@
 #include<iostream>
-#include<map>
+#include<unordered_map>
 #include<chrono>
 #include<string>
 using namespace std;
 
 typedef pair<unsigned long int, int> chain;
-typedef map<unsigned long int, int> chainMap;
+typedef unordered_map<unsigned long int, int> chainMap;
 chainMap chains;
 
 //simply gets next item in collatz sequence
@@ -16,12 +16,11 @@ unsigned long int applyCollatz(unsigned long int n) {
 //recursive function to get chainlength of startPos
 int calculateChain(unsigned long int startPos) {
 	if (startPos == 1) return 1;
-
-	pair<chainMap::iterator, bool> const& insertInfo = chains.insert(chain(startPos,0));
-	if (insertInfo.second) {//if wasnt already in list
-		insertInfo.first->second = calculateChain(applyCollatz(startPos)) + 1;
+	
+	if (chains.find(startPos) == chains.end()) {
+		chains[startPos] = calculateChain(applyCollatz(startPos)) + 1;
 	}
-	return insertInfo.first->second;
+	return chains[startPos];
 }
 
 //find the starting pos < goal with the longest chain
@@ -46,14 +45,16 @@ int findLongestChain(int goal) {
 
 
 int main() {
+	chains.reserve(100000000);
 	//take user input of goal
 	int goal;
-	cout << "Enter number to iterate up to (dont be a cunt, this isn't parsed): ";
+	cout << "Enter number to iterate up to: ";
 	cin >> goal;
 	if (goal < 10) {//make sure its above 10
 		cout << "Goal must be greater than 10!" << endl;
 		return 1;
 	}
+	
 
 	// Record start time
 	auto start = std::chrono::high_resolution_clock::now();
